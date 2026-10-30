@@ -1,33 +1,26 @@
 -- ==============================================================================
 -- CivicPulse: Production PostgreSQL & Supabase Database Migration
--- Includes: pgvector, UUID extensions, Enums, Tables, RLS, Indexes, RPC Search
+-- Fully compatible with Supabase SQL Editor
 -- ==============================================================================
 
--- Enable required extensions
+-- 1. Enable required extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "vector";
 
--- Enum Types
-DO $$ BEGIN
-    CREATE TYPE report_category AS ENUM ('waterlogging', 'roads', 'waste', 'streetlights', 'electrical');
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
+-- 2. Drop existing objects if refreshing
+DROP TABLE IF EXISTS report_activity_logs CASCADE;
+DROP TABLE IF EXISTS reports CASCADE;
+DROP TYPE IF EXISTS report_category CASCADE;
+DROP TYPE IF EXISTS report_status CASCADE;
+DROP TYPE IF EXISTS priority_level CASCADE;
 
-DO $$ BEGIN
-    CREATE TYPE report_status AS ENUM ('Submitted', 'Under Review', 'Assigned', 'In Progress', 'Resolved', 'Rejected');
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
+-- 3. Enum types
+CREATE TYPE report_category AS ENUM ('waterlogging', 'roads', 'waste', 'streetlights', 'electrical');
+CREATE TYPE report_status AS ENUM ('Submitted', 'Under Review', 'Assigned', 'In Progress', 'Resolved', 'Rejected');
+CREATE TYPE priority_level AS ENUM ('Critical', 'High', 'Medium', 'Low');
 
-DO $$ BEGIN
-    CREATE TYPE priority_level AS ENUM ('Critical', 'High', 'Medium', 'Low');
-EXCEPTION
-    WHEN duplicate_object THEN null;
-END $$;
-
--- Reports Table
-CREATE TABLE IF NOT EXISTS reports (
+-- 4. Reports Table
+CREATE TABLE reports (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title TEXT NOT NULL,
     description TEXT NOT NULL,
@@ -51,8 +44,8 @@ CREATE TABLE IF NOT EXISTS reports (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Audit / Status History Log Table
-CREATE TABLE IF NOT EXISTS report_activity_logs (
+-- 5. Audit / Status History Log Table
+CREATE TABLE report_activity_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     report_id UUID REFERENCES reports(id) ON DELETE CASCADE,
     previous_status report_status,
@@ -62,68 +55,52 @@ CREATE TABLE IF NOT EXISTS report_activity_logs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Indexes for high-performance querying & spatial lookup
-CREATE INDEX IF NOT EXISTS idx_reports_category ON reports(category);
-CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
-CREATE INDEX IF NOT EXISTS idx_reports_priority ON reports(priority_score DESC);
-CREATE INDEX IF NOT EXISTS idx_reports_location ON reports(latitude, longitude);
-CREATE INDEX IF NOT EXISTS idx_reports_created_at ON reports(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_reports_parent_dup ON reports(parent_duplicate_id);
-CREATE INDEX IF NOT EXISTS idx_activity_report_id ON report_activity_logs(report_id);
+-- 6. Indexes for high performance & spatial lookup
+CREATE INDEX idx_reports_category ON reports(category);
+CREATE INDEX idx_reports_status ON reports(status);
+CREATE INDEX idx_reports_priority ON reports(priority_score DESC);
+CREATE INDEX idx_reports_location ON reports(latitude, longitude);
+CREATE INDEX idx_reports_created_at ON reports(created_at DESC);
+CREATE INDEX idx_reports_parent_dup ON reports(parent_duplicate_id);
+CREATE INDEX idx_activity_report_id ON report_activity_logs(report_id);
 
--- Approximate Nearest Neighbor Index for Cosine Similarity (pgvector)
--- Note: ivfflat index requires existing rows or can be added after seeding
-CREATE INDEX IF NOT EXISTS idx_reports_embedding 
-    ON reports USING ivfflat (embedding vector_cosine_ops) 
-    WITH (lists = 100);
+-- 7. HNSW Vector Index for Cosine Similarity (Supported out-of-the-box on empty tables in Supabase)
+CREATE INDEX idx_reports_embedding ON reports USING hnsw (embedding vector_cosine_ops);
 
--- Trigger for auto-updating updated_at
+-- 8. Trigger for auto-updating updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trg_reports_updated_at ON reports;
 CREATE TRIGGER trg_reports_updated_at
     BEFORE UPDATE ON reports
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
--- Row Level Security (RLS) Configuration
+-- 9. Row Level Security (RLS) Configuration
 ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE report_activity_logs ENABLE ROW LEVEL SECURITY;
 
--- 1. Public can insert new reports (citizen submission)
-DROP POLICY IF EXISTS "Allow public report submission" ON reports;
 CREATE POLICY "Allow public report submission" ON reports
     FOR INSERT WITH CHECK (true);
 
--- 2. Public can read reports for public tracking and dashboard
-DROP POLICY IF EXISTS "Allow public report tracking read" ON reports;
 CREATE POLICY "Allow public report tracking read" ON reports
     FOR SELECT USING (true);
 
--- 3. Staff and Admins can update reports (status, worker assignment, priority)
-DROP POLICY IF EXISTS "Allow staff update reports" ON reports;
 CREATE POLICY "Allow staff update reports" ON reports
     FOR UPDATE USING (true);
 
--- 4. Activity Logs RLS: Public can view timeline logs
-DROP POLICY IF EXISTS "Allow public log read" ON report_activity_logs;
 CREATE POLICY "Allow public log read" ON report_activity_logs
     FOR SELECT USING (true);
 
--- 5. Staff and System can insert activity logs
-DROP POLICY IF EXISTS "Allow staff insert logs" ON report_activity_logs;
 CREATE POLICY "Allow staff insert logs" ON report_activity_logs
     FOR INSERT WITH CHECK (true);
 
--- ==============================================================================
--- RPC: Semantic Duplicate Search Function using Cosine Distance
--- ==============================================================================
+-- 10. RPC: Semantic Duplicate Search Function using Cosine Distance
 CREATE OR REPLACE FUNCTION match_reports(
     query_embedding VECTOR(768),
     match_threshold FLOAT DEFAULT 0.82,
@@ -155,7 +132,7 @@ BEGIN
         r.priority_score,
         r.latitude,
         r.longitude,
-        1 - (r.embedding <=> query_embedding) AS similarity
+        (1 - (r.embedding <=> query_embedding))::FLOAT AS similarity
     FROM reports r
     WHERE r.embedding IS NOT NULL
       AND 1 - (r.embedding <=> query_embedding) >= match_threshold
