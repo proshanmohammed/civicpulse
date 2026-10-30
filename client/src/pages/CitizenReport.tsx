@@ -15,12 +15,17 @@ import {
   X,
   MapPin,
   Clock,
-  ShieldAlert
+  ShieldAlert,
+  Copy,
+  Check,
+  ArrowRight,
+  ExternalLink
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { z } from 'zod';
 import { createReport } from '../lib/api';
 import { LocationPicker } from '../components/LocationPicker';
-import { ReportCategory } from '../types';
+import { ReportCategory, Report } from '../types';
 import { useAuth } from '../context/AuthContext';
 
 // Zod schema matching Section 16
@@ -100,6 +105,11 @@ export const CitizenReport: React.FC = () => {
   const [submitPhase, setSubmitPhase] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Thank You Modal State
+  const [submittedReport, setSubmittedReport] = useState<Report | null>(null);
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
+
   const applyPreset = (preset: typeof QUICK_PRESETS[0]) => {
     setCategory(preset.category);
     setDescription(preset.desc);
@@ -155,10 +165,22 @@ export const CitizenReport: React.FC = () => {
       setSubmitPhase('Gemini AI calculating explainable priority & action brief...');
       const response = await createReport(payload);
 
-      setSubmitPhase('Ticket registered! Redirecting...');
-      await new Promise(r => setTimeout(r, 300));
+      setSubmitPhase('Hazard registered! Launching briefing...');
+      await new Promise(r => setTimeout(r, 200));
 
-      navigate(`/report/success/${response.data.id}`);
+      setSubmittedReport(response.data);
+      setShowThankYouModal(true);
+
+      // Trigger celebratory confetti
+      try {
+        confetti({
+          particleCount: 85,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      } catch (e) {
+        // ignore
+      }
     } catch (err: any) {
       console.error('Submission failed:', err);
       setErrorMessage(err.message || 'Failed to submit report. Please try again.');
@@ -370,6 +392,104 @@ export const CitizenReport: React.FC = () => {
         </div>
 
       </form>
+
+      {/* ── Thank You / Grievance Registered Popup Modal ── */}
+      {showThankYouModal && submittedReport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-lg glass-panel p-6 sm:p-8 rounded-3xl border-2 border-emerald-500/40 shadow-2xl shadow-emerald-500/20 text-center space-y-6">
+            
+            {/* Glow Icon */}
+            <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-amber-400 p-0.5 mx-auto shadow-xl shadow-emerald-500/30">
+              <div className="w-full h-full bg-[#050b14] rounded-[22px] flex items-center justify-center text-emerald-400">
+                <CheckCircle2 className="w-9 h-9 stroke-[2.5]" />
+              </div>
+            </div>
+
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 text-xs font-bold mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span>HAZARD LOGGED IN METROSHIELD COMMAND</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                Thank You for Reporting!
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-sm mx-auto leading-relaxed">
+                Thank you, <strong className="text-emerald-300">{user?.name?.split(' ')[0] || 'Citizen'}</strong>! Your report was triaged by Gemini AI and dispatched to municipal field crews.
+              </p>
+            </div>
+
+            {/* Ticket Brief Card */}
+            <div className="bg-[#070d18] border border-emerald-500/25 rounded-2xl p-4 text-left space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-400 font-mono text-[11px]">Tracking Ticket ID</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-mono text-emerald-300 font-bold text-xs">{submittedReport.id.slice(0, 16)}...</span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(submittedReport.id);
+                      setCopiedId(true);
+                      setTimeout(() => setCopiedId(false), 2000);
+                    }}
+                    className="p-1 rounded bg-slate-800 text-slate-300 hover:text-white"
+                    title="Copy Ticket ID"
+                  >
+                    {copiedId ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                <span className="text-xs text-slate-400">AI Priority Assessment:</span>
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-black border ${
+                  submittedReport.priority === 'Critical' ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' :
+                  submittedReport.priority === 'High' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' :
+                  'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                }`}>
+                  {submittedReport.priority} ({submittedReport.priority_score}/100)
+                </span>
+              </div>
+
+              {submittedReport.action_brief && (
+                <div className="text-[11px] text-slate-300 bg-[#0a1220] p-2.5 rounded-xl border border-slate-800">
+                  <span className="text-emerald-400 font-bold block mb-0.5">Field Directive:</span>
+                  {submittedReport.action_brief}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <button
+                onClick={() => navigate(`/report/success/${submittedReport.id}`)}
+                className="w-full py-3 rounded-xl font-black text-xs bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-black shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-1.5 transition-all"
+              >
+                <span>Track Live Incident</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </button>
+
+              <button
+                onClick={() => navigate('/')}
+                className="w-full py-3 rounded-xl font-semibold text-xs bg-[#090f1a] hover:bg-slate-800 border border-slate-700 text-slate-200 transition-all"
+              >
+                View on Public Feed
+              </button>
+            </div>
+
+            <button
+              onClick={() => {
+                setShowThankYouModal(false);
+                setDescription('');
+                setImageUrl('');
+              }}
+              className="text-[11px] text-slate-500 hover:text-slate-300 transition-colors block mx-auto"
+            >
+              Report another hazard
+            </button>
+
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

@@ -35,7 +35,7 @@ class LocalCivicStore {
         previous_status: null,
         new_status: 'Submitted',
         changed_by: 'System / Citizen Submission',
-        notes: 'Initial civic report registered via CivicPulse portal.',
+        notes: 'Initial civic report registered via MetroShield portal.',
         created_at: record.created_at
       });
 
@@ -355,7 +355,7 @@ export const db = {
   async seedData() {
     if (isSupabaseConfigured) {
       try {
-        console.log('[Supabase] Seeding database with 40 synthetic reports...');
+        console.log(`[Supabase] Seeding database with ${seedReports.length} synthetic reports...`);
         const reportsToInsert = seedReports.map(r => ({
           ...r,
           embedding: generateFallbackEmbedding(r.title + ' ' + r.description)

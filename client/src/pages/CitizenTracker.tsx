@@ -323,7 +323,7 @@ export const CitizenTracker: React.FC = () => {
                 className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-black hover:bg-emerald-400 transition-all flex items-center gap-1.5"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                Reset 40 Sample Hazards
+                Reset 62 Sample Hazards
               </button>
               <Link
                 to="/report"

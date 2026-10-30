@@ -18,10 +18,95 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-// ─── Demo Credentials ─────────────────────────────────────────────────────────
+// ─── Demo Profiles ─────────────────────────────────────────────────────────────
+export interface DemoProfile {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: Role;
+  tagline: string;
+  badge: string;
+  initials: string;
+  department: string;
+}
+
+export const DEMO_PROFILES: Record<Role, DemoProfile[]> = {
+  citizen: [
+    {
+      id: 'cit-1',
+      name: 'Roshan Kumar',
+      email: 'citizen@metroshield.city',
+      password: 'citizen123',
+      role: 'citizen',
+      tagline: 'Active Neighborhood Reporter & Watch',
+      badge: 'District Lead',
+      initials: 'RK',
+      department: 'Ward 4 - Downtown Bay',
+    },
+    {
+      id: 'cit-2',
+      name: 'Sarah Jenkins',
+      email: 'sarah.citizen@metroshield.city',
+      password: 'citizen123',
+      role: 'citizen',
+      tagline: "St. Mary's School PTA & Safety Lead",
+      badge: 'School Safety Watch',
+      initials: 'SJ',
+      department: 'Ward 2 - Academic Corridor',
+    },
+    {
+      id: 'cit-3',
+      name: 'David Park',
+      email: 'david.park@metroshield.city',
+      password: 'citizen123',
+      role: 'citizen',
+      tagline: 'Market Square Merchant Association',
+      badge: 'Civic Advocate',
+      initials: 'DP',
+      department: 'Ward 7 - Commercial Zone',
+    },
+  ],
+  authority: [
+    {
+      id: 'auth-1',
+      name: 'Commander Dev',
+      email: 'admin@metroshield.gov',
+      password: 'admin123',
+      role: 'authority',
+      tagline: 'Chief Municipal Dispatcher & Ops',
+      badge: 'HQ Command',
+      initials: 'CD',
+      department: 'Central Triage HQ',
+    },
+    {
+      id: 'auth-2',
+      name: 'Chief Inspector Morales',
+      email: 'morales.inspect@metroshield.gov',
+      password: 'admin123',
+      role: 'authority',
+      tagline: 'Structural Safety & Hazard Triage',
+      badge: 'Lead Inspector',
+      initials: 'IM',
+      department: 'Civil Engineering Division',
+    },
+    {
+      id: 'auth-3',
+      name: 'Captain Sarah Chen',
+      email: 'chen.dispatch@metroshield.gov',
+      password: 'admin123',
+      role: 'authority',
+      tagline: 'Emergency Rapid Response Director',
+      badge: 'Disaster Ops',
+      initials: 'SC',
+      department: 'Emergency Transit Command',
+    },
+  ],
+};
+
 const DEMO_ACCOUNTS = {
-  citizen: { email: 'citizen@metroshield.city', password: 'citizen123', name: 'Roshan Kumar' },
-  authority: { email: 'admin@metroshield.gov', password: 'admin123', name: 'Commander Dev' },
+  citizen: DEMO_PROFILES.citizen[0],
+  authority: DEMO_PROFILES.authority[0],
 };
 
 type Role = 'citizen' | 'authority';
@@ -57,9 +142,10 @@ export const LoginPage: React.FC = () => {
   }, [isAuthenticated, user, navigate]);
 
   const [selectedRole, setSelectedRole] = useState<Role>('citizen');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [activeProfileId, setActiveProfileId] = useState<string>(DEMO_PROFILES.citizen[0].id);
+  const [name, setName] = useState(DEMO_PROFILES.citizen[0].name);
+  const [email, setEmail] = useState(DEMO_PROFILES.citizen[0].email);
+  const [password, setPassword] = useState(DEMO_PROFILES.citizen[0].password);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -71,11 +157,29 @@ export const LoginPage: React.FC = () => {
     return () => clearInterval(t);
   }, []);
 
-  const handleDemoLogin = () => {
-    const demo = DEMO_ACCOUNTS[selectedRole];
-    setName(demo.name);
-    setEmail(demo.email);
-    setPassword(demo.password);
+  const selectPersona = (profile: DemoProfile) => {
+    setActiveProfileId(profile.id);
+    setName(profile.name);
+    setEmail(profile.email);
+    setPassword(profile.password);
+    setError('');
+  };
+
+  const handleInstantPersonaLogin = async (profile: DemoProfile) => {
+    setIsLoading(true);
+    selectPersona(profile);
+    await new Promise((r) => setTimeout(r, 400));
+    login(profile.role, profile.name, profile.email);
+    navigate(profile.role === 'authority' ? '/admin' : '/', { replace: true });
+  };
+
+  const handleRoleChange = (role: Role) => {
+    setSelectedRole(role);
+    const defaultProfile = DEMO_PROFILES[role][0];
+    setActiveProfileId(defaultProfile.id);
+    setName(defaultProfile.name);
+    setEmail(defaultProfile.email);
+    setPassword(defaultProfile.password);
     setError('');
   };
 
@@ -85,20 +189,12 @@ export const LoginPage: React.FC = () => {
 
     if (!name.trim()) { setError('Full name is required.'); return; }
     if (!email.trim() || !email.includes('@')) { setError('Enter a valid email address.'); return; }
-    if (password.length < 6) { setError('Password must be at least 6 characters.'); return; }
+    if (password.length < 4) { setError('Password must be at least 4 characters.'); return; }
 
     setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 1200)); // Simulate auth call
+    await new Promise((r) => setTimeout(r, 600)); // Simulate swift auth call
 
-    // Demo credential check (in production replace with real API call)
-    const demo = DEMO_ACCOUNTS[selectedRole];
-    if (email !== demo.email || password !== demo.password) {
-      setIsLoading(false);
-      setError('Invalid credentials. Use the demo login button to auto-fill.');
-      return;
-    }
-
-    login(selectedRole, name, email);
+    login(selectedRole, name.trim(), email.trim());
     navigate(selectedRole === 'authority' ? '/admin' : '/', { replace: true });
   };
 
@@ -252,12 +348,12 @@ export const LoginPage: React.FC = () => {
           </div>
 
           {/* ── Role Selector ── */}
-          <div className="grid grid-cols-2 gap-3 mb-8">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             {/* Citizen Card */}
             <button
               id="role-citizen-btn"
               type="button"
-              onClick={() => { setSelectedRole('citizen'); setError(''); }}
+              onClick={() => handleRoleChange('citizen')}
               className={`relative flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 transition-all duration-300 group overflow-hidden ${
                 isCitizen
                   ? 'border-emerald-500 bg-emerald-950/40 shadow-lg shadow-emerald-500/20'
@@ -276,9 +372,9 @@ export const LoginPage: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className={`text-sm font-black ${isCitizen ? 'text-emerald-300' : 'text-slate-300'}`}>
-                  Citizen
+                  Citizen Portal
                 </div>
-                <div className="text-[11px] text-slate-500">Report & track hazards</div>
+                <div className="text-[11px] text-slate-500">3 Sample Profiles Available</div>
               </div>
               {isCitizen && (
                 <div className="absolute top-2 right-2">
@@ -291,7 +387,7 @@ export const LoginPage: React.FC = () => {
             <button
               id="role-authority-btn"
               type="button"
-              onClick={() => { setSelectedRole('authority'); setError(''); }}
+              onClick={() => handleRoleChange('authority')}
               className={`relative flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 transition-all duration-300 group overflow-hidden ${
                 !isCitizen
                   ? 'border-amber-500 bg-amber-950/40 shadow-lg shadow-amber-500/20'
@@ -310,9 +406,9 @@ export const LoginPage: React.FC = () => {
               </div>
               <div className="text-center">
                 <div className={`text-sm font-black ${!isCitizen ? 'text-amber-300' : 'text-slate-300'}`}>
-                  Authorizer
+                  Authorizer Command
                 </div>
-                <div className="text-[11px] text-slate-500">Command & dispatch</div>
+                <div className="text-[11px] text-slate-500">3 Sample Command Staff</div>
               </div>
               {!isCitizen && (
                 <div className="absolute top-2 right-2">
@@ -320,6 +416,76 @@ export const LoginPage: React.FC = () => {
                 </div>
               )}
             </button>
+          </div>
+
+          {/* ── Sample Personas List (1-Click Instant Login) ── */}
+          <div className="mb-6 p-3.5 rounded-2xl bg-[#08101e]/80 border border-slate-800/80">
+            <div className="flex items-center justify-between mb-2.5 px-1">
+              <span className="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-400 flex items-center gap-1.5">
+                <Sparkles className={`w-3.5 h-3.5 ${isCitizen ? 'text-emerald-400' : 'text-amber-400'}`} />
+                Sample {isCitizen ? 'Citizen' : 'Authorizer'} Logins
+              </span>
+              <span className="text-[10px] text-slate-500 font-mono">Click card or instant enter</span>
+            </div>
+
+            <div className="space-y-2">
+              {DEMO_PROFILES[selectedRole].map((profile) => {
+                const isSelected = activeProfileId === profile.id;
+                return (
+                  <div
+                    key={profile.id}
+                    onClick={() => selectPersona(profile)}
+                    className={`group cursor-pointer p-2.5 rounded-xl border transition-all duration-200 flex items-center justify-between gap-3 ${
+                      isSelected
+                        ? isCitizen
+                          ? 'border-emerald-500/70 bg-emerald-950/40 shadow-sm shadow-emerald-500/10'
+                          : 'border-amber-500/70 bg-amber-950/40 shadow-sm shadow-amber-500/10'
+                        : 'border-slate-800/70 bg-[#0a1222]/60 hover:border-slate-700 hover:bg-[#0e192e]'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center font-black text-xs shrink-0 ${
+                        isCitizen
+                          ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-black'
+                          : 'bg-gradient-to-br from-amber-400 to-yellow-600 text-black'
+                      }`}>
+                        {profile.initials}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-white truncate">{profile.name}</span>
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-medium shrink-0 ${
+                            isCitizen
+                              ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                              : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                          }`}>
+                            {profile.badge}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-slate-400 truncate">{profile.tagline}</div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleInstantPersonaLogin(profile);
+                      }}
+                      className={`shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-200 flex items-center gap-1 ${
+                        isCitizen
+                          ? 'bg-emerald-500/20 hover:bg-emerald-500 hover:text-black text-emerald-300 border border-emerald-500/30'
+                          : 'bg-amber-500/20 hover:bg-amber-500 hover:text-black text-amber-300 border border-amber-500/30'
+                      }`}
+                      title={`Instant login as ${profile.name}`}
+                    >
+                      <span>1-Click</span>
+                      <ArrowRight className="w-3 h-3 stroke-[2.5]" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* ── Login Form ── */}
@@ -450,15 +616,15 @@ export const LoginPage: React.FC = () => {
               )}
             </button>
 
-            {/* Demo Login Helper */}
+            {/* Quick autofill helper */}
             <button
               id="login-demo-btn"
               type="button"
-              onClick={handleDemoLogin}
+              onClick={() => selectPersona(DEMO_PROFILES[selectedRole][0])}
               className="w-full py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white border border-emerald-500/25 hover:border-emerald-500/50 bg-[#090f1a] hover:bg-[#0c1626] transition-all flex items-center justify-center gap-2"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Use 1-Click Demo {isCitizen ? 'Citizen' : 'Authorizer'} Credentials
+              Reset to Primary Demo {isCitizen ? 'Citizen' : 'Authorizer'} ({DEMO_PROFILES[selectedRole][0].name})
             </button>
           </form>
 
