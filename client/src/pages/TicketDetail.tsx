@@ -25,6 +25,7 @@ import {
 import { fetchReportById, updateReportStatus } from '../lib/api';
 import { Report, ReportStatus, PriorityLevel, ActivityLog } from '../types';
 import { getPriorityBadge, getCategoryBadge, getStatusBadge } from '../lib/utils';
+import { useAuth } from '../context/AuthContext';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -57,6 +58,7 @@ const miniPin = L.divIcon({
 export const TicketDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [report, setReport] = useState<Report | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,7 +70,7 @@ export const TicketDetail: React.FC = () => {
   const [priority, setPriority] = useState<PriorityLevel>('Medium');
   const [priorityScore, setPriorityScore] = useState<number>(50);
   const [auditNotes, setAuditNotes] = useState('');
-  const [changedBy, setChangedBy] = useState('Senior Dispatcher Roberts');
+  const [changedBy, setChangedBy] = useState(user?.name || 'Commissioner Dev');
   const [isUpdating, setIsUpdating] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 

@@ -28,12 +28,19 @@ You detect semantic duplicates with high precision and write clear, actionable b
 Always maintain neutrality, accuracy, and clear reasoning.
 `;
 
+function withTimeout(promise, ms = 4000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout after ${ms}ms`)), ms))
+  ]);
+}
+
 /**
- * Analyzes citizen complaints using Gemini models (gemini-3.8-flash with fallbacks)
+ * Analyzes citizen complaints using Gemini models (gemini-2.5-flash with fallbacks)
  */
 export async function generateAIAnalysis(description, category) {
   if (ai) {
-    const candidateModels = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+    const candidateModels = ['gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
     const prompt = `
       ${CIVIC_SYSTEM_PROMPT}
 
@@ -52,7 +59,7 @@ export async function generateAIAnalysis(description, category) {
 
     for (const model of candidateModels) {
       try {
-        const response = await ai.models.generateContent({
+        const response = await withTimeout(ai.models.generateContent({
           model,
           contents: prompt,
           config: {
@@ -70,7 +77,7 @@ export async function generateAIAnalysis(description, category) {
               required: ['category', 'summary', 'priority_score', 'priority_level', 'explanation', 'action_brief']
             }
           }
-        });
+        }), 4500);
 
         const rawText = typeof response.text === 'function' ? response.text() : response.text;
         const parsed = JSON.parse(rawText);
@@ -94,10 +101,10 @@ export async function generateTextEmbedding(text) {
     const embedModels = ['text-embedding-004', 'embedding-001'];
     for (const model of embedModels) {
       try {
-        const response = await ai.models.embedContent({
+        const response = await withTimeout(ai.models.embedContent({
           model,
           contents: text
-        });
+        }), 2500);
         if (response && response.embedding && Array.isArray(response.embedding.values)) {
           return response.embedding.values;
         }

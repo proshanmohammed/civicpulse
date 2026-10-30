@@ -339,10 +339,7 @@ export const LoginPage: React.FC = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder={isCitizen ? 'Roshan Kumar' : 'Commissioner Dev'}
-                  className="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all"
-                  style={{
-                    focusRingColor: isCitizen ? '#6366f1' : '#06b6d4',
-                  }}
+                  className="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl pl-10 pr-4 py-3 text-sm text-slate-100 placeholder-slate-600 focus:outline-none transition-all"
                   onFocus={(e) => {
                     e.target.style.borderColor = isCitizen ? '#6366f1' : '#06b6d4';
                     e.target.style.boxShadow = isCitizen
