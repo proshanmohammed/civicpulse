@@ -29,56 +29,60 @@ Always maintain neutrality, accuracy, and clear reasoning.
 `;
 
 /**
- * Analyzes citizen complaints using Gemini 2.5 Flash
+ * Analyzes citizen complaints using Gemini models (gemini-3.8-flash with fallbacks)
  */
 export async function generateAIAnalysis(description, category) {
   if (ai) {
-    try {
-      const model = 'gemini-2.5-flash';
-      const prompt = `
-        ${CIVIC_SYSTEM_PROMPT}
+    const candidateModels = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-1.5-flash'];
+    const prompt = `
+      ${CIVIC_SYSTEM_PROMPT}
 
-        Analyze the following citizen civic complaint:
-        Description: "${description}"
-        User Selected Category: "${category || 'auto-detect'}"
+      Analyze the following citizen civic complaint:
+      Description: "${description}"
+      User Selected Category: "${category || 'auto-detect'}"
 
-        Perform the following tasks and output strictly in JSON format matching the schema:
-        1. Clean category (validate or correct to one of: waterlogging, roads, waste, streetlights, electrical).
-        2. Generate a concise 1-sentence summary.
-        3. Calculate a priority score from 0 to 100 based on safety hazards, urgency, and scale.
-        4. Assign priority level ('Critical', 'High', 'Medium', 'Low').
-        5. Provide a plain-language explanation for why this priority score was assigned.
-        6. Generate a 1-sentence action brief for field workers.
-      `;
+      Perform the following tasks and output strictly in JSON format matching the schema:
+      1. Clean category (validate or correct to one of: waterlogging, roads, waste, streetlights, electrical).
+      2. Generate a concise 1-sentence summary.
+      3. Calculate a priority score from 0 to 100 based on safety hazards, urgency, and scale.
+      4. Assign priority level ('Critical', 'High', 'Medium', 'Low').
+      5. Provide a plain-language explanation for why this priority score was assigned.
+      6. Generate a 1-sentence action brief for field workers.
+    `;
 
-      const response = await ai.models.generateContent({
-        model,
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: 'OBJECT',
-            properties: {
-              category: { type: 'STRING' },
-              summary: { type: 'STRING' },
-              priority_score: { type: 'INTEGER' },
-              priority_level: { type: 'STRING' },
-              explanation: { type: 'STRING' },
-              action_brief: { type: 'STRING' }
-            },
-            required: ['category', 'summary', 'priority_score', 'priority_level', 'explanation', 'action_brief']
+    for (const model of candidateModels) {
+      try {
+        const response = await ai.models.generateContent({
+          model,
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: 'OBJECT',
+              properties: {
+                category: { type: 'STRING' },
+                summary: { type: 'STRING' },
+                priority_score: { type: 'INTEGER' },
+                priority_level: { type: 'STRING' },
+                explanation: { type: 'STRING' },
+                action_brief: { type: 'STRING' }
+              },
+              required: ['category', 'summary', 'priority_score', 'priority_level', 'explanation', 'action_brief']
+            }
           }
-        }
-      });
+        });
 
-      const parsed = typeof response.text === 'function' ? JSON.parse(response.text()) : JSON.parse(response.text);
-      // Validate schema
-      return normalizeAnalysis(parsed, description, category);
-    } catch (error) {
-      console.warn('[Gemini] API error during generateContent. Falling back to local heuristic pipeline:', error.message);
+        const rawText = typeof response.text === 'function' ? response.text() : response.text;
+        const parsed = JSON.parse(rawText);
+        console.log(`[Gemini] Successfully triaged grievance using model ${model}`);
+        return normalizeAnalysis(parsed, description, category);
+      } catch (error) {
+        console.warn(`[Gemini] Model ${model} returned error: ${error.message}. Attempting next...`);
+      }
     }
   }
 
+  console.log('[Gemini] Using resilient municipal intelligence NLP fallback analyzer.');
   return generateFallbackAIAnalysis(description, category);
 }
 
@@ -87,16 +91,19 @@ export async function generateAIAnalysis(description, category) {
  */
 export async function generateTextEmbedding(text) {
   if (ai) {
-    try {
-      const response = await ai.models.embedContent({
-        model: 'text-embedding-004',
-        contents: text
-      });
-      if (response && response.embedding && Array.isArray(response.embedding.values)) {
-        return response.embedding.values;
+    const embedModels = ['text-embedding-004', 'embedding-001'];
+    for (const model of embedModels) {
+      try {
+        const response = await ai.models.embedContent({
+          model,
+          contents: text
+        });
+        if (response && response.embedding && Array.isArray(response.embedding.values)) {
+          return response.embedding.values;
+        }
+      } catch (error) {
+        console.warn(`[Gemini] Embed model ${model} error: ${error.message}`);
       }
-    } catch (error) {
-      console.warn('[Gemini] API error during embedContent. Using fallback embedding engine:', error.message);
     }
   }
 
