@@ -224,11 +224,11 @@ const localStore = new LocalCivicStore();
 // Bridges seamlessly between Supabase and Local Persistent Store
 // ==============================================================================
 export const db = {
-  async getAllReports(filters) {
+  async getAllReports(filters = {}) {
     if (isSupabaseConfigured) {
       try {
         let query = supabase.from('reports').select('*').order('created_at', { ascending: false });
-        if (filters.category && filters.category !== 'all') {
+        if (filters && filters.category && filters.category !== 'all') {
           query = query.eq('category', filters.category);
         }
         if (filters.status && filters.status !== 'all') {
