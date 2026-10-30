@@ -1,0 +1,16 @@
+{
+  "name": "civicpulse",
+  "version": "1.0.0",
+  "description": "CivicPulse - AI-Powered Civic Issue Resolution Platform",
+  "private": true,
+  "scripts": {
+    "server": "npm.cmd --prefix server start",
+    "client": "npm.cmd --prefix client dev",
+    "dev": "concurrently \"npm.cmd --prefix server run dev\" \"npm.cmd --prefix client dev\"",
+    "build": "npm.cmd --prefix client run build",
+    "seed": "npm.cmd --prefix server run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
