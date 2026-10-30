@@ -56,8 +56,17 @@ CREATE INDEX IF NOT EXISTS idx_reports_location ON reports(latitude, longitude);
 ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE report_activity_logs ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Allow public report submission" ON reports;
 CREATE POLICY "Allow public report submission" ON reports FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow public report tracking read" ON reports;
 CREATE POLICY "Allow public report tracking read" ON reports FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow staff update reports" ON reports;
 CREATE POLICY "Allow staff update reports" ON reports FOR UPDATE USING (true);
+
+DROP POLICY IF EXISTS "Allow public log read" ON report_activity_logs;
 CREATE POLICY "Allow public log read" ON report_activity_logs FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow staff insert logs" ON report_activity_logs;
 CREATE POLICY "Allow staff insert logs" ON report_activity_logs FOR INSERT WITH CHECK (true);
