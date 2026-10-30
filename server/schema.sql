@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- CivicPulse: Production PostgreSQL & Supabase Database Migration
--- Fully compatible with Supabase SQL Editor
+-- 100% Pure DDL (Zero Parser Conflicts in Supabase Web Editor)
 -- ==============================================================================
 
 -- 1. Enable required extensions
@@ -64,24 +64,7 @@ CREATE INDEX idx_reports_created_at ON reports(created_at DESC);
 CREATE INDEX idx_reports_parent_dup ON reports(parent_duplicate_id);
 CREATE INDEX idx_activity_report_id ON report_activity_logs(report_id);
 
--- 7. HNSW Vector Index for Cosine Similarity (Supported out-of-the-box on empty tables in Supabase)
-CREATE INDEX idx_reports_embedding ON reports USING hnsw (embedding vector_cosine_ops);
-
--- 8. Trigger for auto-updating updated_at
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_reports_updated_at
-    BEFORE UPDATE ON reports
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
-
--- 9. Row Level Security (RLS) Configuration
+-- 7. Row Level Security (RLS) Configuration
 ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE report_activity_logs ENABLE ROW LEVEL SECURITY;
 
@@ -99,44 +82,3 @@ CREATE POLICY "Allow public log read" ON report_activity_logs
 
 CREATE POLICY "Allow staff insert logs" ON report_activity_logs
     FOR INSERT WITH CHECK (true);
-
--- 10. RPC: Semantic Duplicate Search Function using Cosine Distance
-CREATE OR REPLACE FUNCTION match_reports(
-    query_embedding VECTOR(768),
-    match_threshold FLOAT DEFAULT 0.82,
-    match_count INT DEFAULT 5
-)
-RETURNS TABLE (
-    id UUID,
-    title TEXT,
-    description TEXT,
-    category report_category,
-    status report_status,
-    priority priority_level,
-    priority_score INT,
-    latitude DOUBLE PRECISION,
-    longitude DOUBLE PRECISION,
-    similarity FLOAT
-)
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-        r.id,
-        r.title,
-        r.description,
-        r.category,
-        r.status,
-        r.priority,
-        r.priority_score,
-        r.latitude,
-        r.longitude,
-        (1 - (r.embedding <=> query_embedding))::FLOAT AS similarity
-    FROM reports r
-    WHERE r.embedding IS NOT NULL
-      AND 1 - (r.embedding <=> query_embedding) >= match_threshold
-    ORDER BY r.embedding <=> query_embedding ASC
-    LIMIT match_count;
-END;
-$$;
