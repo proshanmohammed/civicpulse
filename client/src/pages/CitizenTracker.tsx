@@ -282,6 +282,58 @@ export const CitizenTracker: React.FC = () => {
               showClustersByDefault={true}
             />
           </div>
+        ) : loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-pulse">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="glass-panel rounded-2xl p-5 border border-emerald-500/20 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="h-5 w-28 bg-emerald-950/60 rounded-full" />
+                  <div className="h-5 w-16 bg-slate-800 rounded-full" />
+                </div>
+                <div className="h-5 w-3/4 bg-slate-800 rounded" />
+                <div className="h-12 w-full bg-slate-900/80 rounded" />
+                <div className="h-4 w-1/2 bg-slate-800 rounded" />
+              </div>
+            ))}
+          </div>
+        ) : filteredReports.length === 0 ? (
+          <div className="glass-panel rounded-3xl p-10 text-center border border-emerald-500/20 max-w-lg mx-auto space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-white">No Matching Hazards Found</h3>
+            <p className="text-xs text-slate-400">
+              No civic issues match your current filter. You can reset all 40 realistic municipal samples or report a new one.
+            </p>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                onClick={async () => {
+                  setLoading(true);
+                  try {
+                    await fetch('/api/seed', { method: 'POST' });
+                    const res = await fetch('/api/reports');
+                    const json = await res.json();
+                    setReports(json.data || []);
+                  } catch (e) {
+                    console.error(e);
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-500 text-black hover:bg-emerald-400 transition-all flex items-center gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Reset 40 Sample Hazards
+              </button>
+              <Link
+                to="/report"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-[#090f1a] border border-slate-700 text-white hover:border-slate-500 transition-all flex items-center gap-1.5"
+              >
+                <PlusCircle className="w-3.5 h-3.5 text-emerald-400" />
+                Report New Hazard
+              </Link>
+            </div>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in">
             {filteredReports.map((report) => (
