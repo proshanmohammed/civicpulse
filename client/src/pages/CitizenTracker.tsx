@@ -17,13 +17,16 @@ import {
   List
 } from 'lucide-react';
 import { fetchReports, fetchStats, fetchClusters } from '../lib/api';
-import { Report, CityStats, ClusterInsight, ReportCategory } from '../types';
+import { Report, CityStats, ClusterInsight } from '../types';
 import { MetricsGrid } from '../components/MetricsGrid';
 import { ReportCard } from '../components/ReportCard';
 import { MapDashboard } from '../components/MapDashboard';
+import { useAuth } from '../context/AuthContext';
 
 export const CitizenTracker: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const firstName = user?.name?.split(' ')[0] || 'Citizen';
 
   const [reports, setReports] = useState<Report[]>([]);
   const [stats, setStats] = useState<CityStats | null>(null);
@@ -99,7 +102,7 @@ export const CitizenTracker: React.FC = () => {
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
             <Radio className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
-            <span>Autonomous Municipal Intelligence Platform</span>
+            <span>Welcome back, <strong>{firstName}</strong> · Citizen Portal</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">

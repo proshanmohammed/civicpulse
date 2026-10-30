@@ -21,6 +21,7 @@ import { z } from 'zod';
 import { createReport } from '../lib/api';
 import { LocationPicker } from '../components/LocationPicker';
 import { ReportCategory } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 // Zod schema matching Section 16
 const reportValidationSchema = z.object({
@@ -83,6 +84,7 @@ const QUICK_PRESETS = [
 
 export const CitizenReport: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Form State
   const [category, setCategory] = useState<ReportCategory>('waterlogging');
@@ -91,7 +93,7 @@ export const CitizenReport: React.FC = () => {
   const [latitude, setLatitude] = useState(37.7785);
   const [longitude, setLongitude] = useState(-122.4215);
   const [imageUrl, setImageUrl] = useState('');
-  const [reporterContact, setReporterContact] = useState('');
+  const [reporterContact, setReporterContact] = useState(user?.email || '');
 
   // UI Processing State
   const [isSubmitting, setIsSubmitting] = useState(false);

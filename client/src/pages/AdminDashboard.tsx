@@ -19,8 +19,10 @@ import { MetricsGrid } from '../components/MetricsGrid';
 import { MapDashboard } from '../components/MapDashboard';
 import { AdminQueueTable } from '../components/AdminQueueTable';
 import { ActionBriefModal } from '../components/ActionBriefModal';
+import { useAuth } from '../context/AuthContext';
 
 export const AdminDashboard: React.FC = () => {
+  const { user } = useAuth();
   const [reports, setReports] = useState<Report[]>([]);
   const [stats, setStats] = useState<CityStats | null>(null);
   const [clusters, setClusters] = useState<ClusterInsight[]>([]);
@@ -73,7 +75,7 @@ export const AdminDashboard: React.FC = () => {
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Real-time automated grievance triage, spatial hotspot containment, and field crew orchestration.
+            Logged in as <span className="text-cyan-300 font-semibold">{user?.name}</span> · Real-time automated grievance triage, spatial hotspot containment, and field crew orchestration.
           </p>
         </div>
 
