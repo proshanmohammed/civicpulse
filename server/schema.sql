@@ -61,3 +61,33 @@ CREATE POLICY "Allow public report tracking read" ON reports FOR SELECT USING (t
 CREATE POLICY "Allow staff update reports" ON reports FOR UPDATE USING (true);
 CREATE POLICY "Allow public log read" ON report_activity_logs FOR SELECT USING (true);
 CREATE POLICY "Allow staff insert logs" ON report_activity_logs FOR INSERT WITH CHECK (true);
+
+-- Cosine Distance Vector Search RPC
+CREATE OR REPLACE FUNCTION match_reports(
+    query_embedding VECTOR(768),
+    match_threshold FLOAT DEFAULT 0.80,
+    match_count INT DEFAULT 5
+)
+RETURNS TABLE (
+    id UUID,
+    title TEXT,
+    description TEXT,
+    category TEXT,
+    status TEXT,
+    priority TEXT,
+    priority_score INT,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    similarity FLOAT
+)
+LANGUAGE plpgsql AS $$
+BEGIN
+    RETURN QUERY
+    SELECT r.id, r.title, r.description, r.category, r.status, r.priority, r.priority_score,
+           r.latitude, r.longitude, (1 - (r.embedding <=> query_embedding))::FLOAT AS similarity
+    FROM reports r
+    WHERE r.embedding IS NOT NULL AND (1 - (r.embedding <=> query_embedding)) >= match_threshold
+    ORDER BY r.embedding <=> query_embedding ASC
+    LIMIT match_count;
+END;
+$$;
