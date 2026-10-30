@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { MapPin, Navigation, Compass } from 'lucide-react';
+import { MapPin, Navigation } from 'lucide-react';
+
+// Fix broken Leaflet default icon in Vite
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
 
 // Custom Pin for citizen location selector
 const pickerIcon = L.divIcon({
@@ -29,8 +37,12 @@ function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number,
 
 function MapCenterUpdater({ center }: { center: [number, number] }) {
   const map = useMap();
+  const prev = useRef<string>('');
   useEffect(() => {
-    map.setView(center, 15, { animate: true });
+    const key = `${center[0]},${center[1]}`;
+    if (prev.current === key) return;
+    prev.current = key;
+    map.flyTo(center, 15, { animate: true, duration: 0.6 });
   }, [center, map]);
   return null;
 }
@@ -47,6 +59,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
   onLocationChange
 }) => {
   const [isLocating, setIsLocating] = useState(false);
+  const [mapKey] = useState(() => `lp-${Math.random().toString(36).slice(2)}`);
 
   const handleUseGeolocation = () => {
     if (!navigator.geolocation) {
@@ -91,16 +104,18 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
 
       <div className="h-56 sm:h-64 rounded-xl overflow-hidden border border-slate-700/80 relative shadow-inner">
         <MapContainer
+          key={mapKey}
           center={[latitude, longitude]}
           zoom={14}
           scrollWheelZoom={false}
-          style={{ height: '100%', width: '100%' }}
+          style={{ height: '100%', width: '100%', background: '#0a0f1d' }}
         >
           <MapCenterUpdater center={[latitude, longitude]} />
           <MapClickHandler onLocationSelect={onLocationChange} />
           <TileLayer
-            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            subdomains={['a', 'b', 'c']}
           />
           <Marker position={[latitude, longitude]} icon={pickerIcon} />
         </MapContainer>

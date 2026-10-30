@@ -42,14 +42,14 @@
   background: #334155;
 }
 
-/* Leaflet Dark Mode Map Customization */
-.leaflet-container {
-  background-color: #0d1527 !important;
-  font-family: inherit !important;
+/* OSM tile dark mode filter — inverts light tiles to dark navy theme */
+.leaflet-tile-pane {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
 }
 
-.leaflet-tile {
-  filter: brightness(0.65) invert(1) contrast(3) hue-rotate(200deg) saturate(0.35) brightness(0.7);
+/* Prevent white flash on tile load */
+.leaflet-container {
+  background: #0a0f1d !important;
 }
 
 .leaflet-popup-content-wrapper {

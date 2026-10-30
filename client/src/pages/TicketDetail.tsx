@@ -28,6 +28,14 @@ import { getPriorityBadge, getCategoryBadge, getStatusBadge } from '../lib/utils
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import L from 'leaflet';
 
+// Fix broken Leaflet default icon in Vite
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
+
 const FIELD_CREWS = [
   'Field Crew Alpha (Water & Drainage)',
   'Rapid Response Grid Squad 1',
@@ -305,14 +313,17 @@ export const TicketDetail: React.FC = () => {
               </span>
               <div className="h-44 rounded-xl overflow-hidden border border-slate-700">
                 <MapContainer
+                  key={`ticket-map-${report.id}`}
                   center={[report.latitude, report.longitude]}
                   zoom={15}
                   scrollWheelZoom={false}
-                  style={{ height: '100%', width: '100%' }}
+                  zoomControl={false}
+                  style={{ height: '100%', width: '100%', background: '#0a0f1d' }}
                 >
                   <TileLayer
-                    attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    subdomains={['a', 'b', 'c']}
                   />
                   <Marker position={[report.latitude, report.longitude]} icon={miniPin} />
                 </MapContainer>
