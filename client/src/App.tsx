@@ -9,7 +9,7 @@ import { ReportSuccess } from './pages/ReportSuccess';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { TicketDetail } from './pages/TicketDetail';
 import { ClusterIntelligence } from './pages/ClusterIntelligence';
-import { Radio } from 'lucide-react';
+import { Radio, ShieldAlert } from 'lucide-react';
 
 // ─── Protected Route Guards ───────────────────────────────────────────────────
 const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -44,7 +44,7 @@ const RootRedirect: React.FC = () => {
 // ─── App Shell (with Navbar + Footer) ────────────────────────────────────────
 const AppShell: React.FC = () => {
   return (
-    <div className="min-h-screen bg-[#0a0f1d] text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#05080f] text-slate-100 flex flex-col font-sans selection:bg-emerald-500 selection:text-black">
       <Navbar />
       <main className="flex-1 pb-16">
         <Routes>
@@ -65,19 +65,19 @@ const AppShell: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-950/70 py-8 px-4 sm:px-6 lg:px-8 mt-auto">
+      <footer className="border-t border-emerald-500/15 bg-[#03060c] py-8 px-4 sm:px-6 lg:px-8 mt-auto">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
-              <Radio className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-sm shadow-emerald-500/20">
+              <ShieldAlert className="w-4 h-4" />
             </div>
-            <span className="font-bold text-white">CivicPulse</span>
-            <span className="text-slate-500">| Autonomous Municipal Intelligence Engine</span>
+            <span className="font-black text-white tracking-wide text-sm">MetroShield</span>
+            <span className="text-slate-500">| Municipal Hazard Command &amp; City Defense</span>
           </div>
           <div className="flex items-center gap-4 text-[11px] text-slate-500">
-            <span>Powered by Gemini 2.5 Flash &amp; pgvector</span>
+            <span className="text-emerald-400/80 font-mono font-medium">Powered by Gemini AI &amp; pgvector</span>
             <span>·</span>
-            <span>Zero Placeholder Production Architecture</span>
+            <span className="text-amber-400/80 font-mono">Cyberpunk Emerald Core v2.0</span>
           </div>
         </div>
       </footer>

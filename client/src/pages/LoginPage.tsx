@@ -20,8 +20,8 @@ import { useAuth } from '../context/AuthContext';
 
 // ─── Demo Credentials ─────────────────────────────────────────────────────────
 const DEMO_ACCOUNTS = {
-  citizen: { email: 'citizen@civicpulse.city', password: 'citizen123', name: 'Roshan Kumar' },
-  authority: { email: 'admin@civicpulse.gov', password: 'admin123', name: 'Commissioner Dev' },
+  citizen: { email: 'citizen@metroshield.city', password: 'citizen123', name: 'Roshan Kumar' },
+  authority: { email: 'admin@metroshield.gov', password: 'admin123', name: 'Commander Dev' },
 };
 
 type Role = 'citizen' | 'authority';
@@ -168,30 +168,29 @@ export const LoginPage: React.FC = () => {
         <div>
           {/* Logo */}
           <div className="flex items-center gap-3 mb-16">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-0.5 shadow-xl shadow-indigo-500/30">
-              <div className="w-full h-full bg-[#0d1527] rounded-[14px] flex items-center justify-center">
-                <Radio className="w-6 h-6 text-indigo-400" />
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-amber-400 p-0.5 shadow-xl shadow-emerald-500/25">
+              <div className="w-full h-full bg-[#070d18] rounded-[14px] flex items-center justify-center">
+                <ShieldAlert className="w-6 h-6 text-emerald-400" />
               </div>
             </div>
             <div>
-              <div className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">
-                CivicPulse
+              <div className="text-2xl font-black tracking-tight bg-gradient-to-r from-white via-emerald-100 to-amber-300 bg-clip-text text-transparent">
+                MetroShield
               </div>
-              <div className="text-[11px] text-slate-400 font-mono">AI ENGINE v2.0</div>
+              <div className="text-[11px] text-emerald-400/90 font-mono font-bold tracking-widest">CYBER COMMAND v2.0</div>
             </div>
           </div>
 
           {/* Hero Headline */}
           <h1 className="text-4xl xl:text-5xl font-black leading-tight text-white mb-6">
-            Transform{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
-              civic grievances
+            Contain{' '}
+            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-400 bg-clip-text text-transparent">
+              urban hazards
             </span>{' '}
-            into instant action
+            with instant AI action
           </h1>
           <p className="text-slate-400 text-base leading-relaxed max-w-md mb-12">
-            AI-powered triage, semantic deduplication, spatial hotspot mapping, and real-time
-            resolution tracking — all in one unified municipal intelligence platform.
+            Automated municipal hazard triage, pgvector semantic deduplication, spatial DBSCAN hotspot mapping, and rapid field crew orchestration.
           </p>
 
           {/* Feature Pills */}
@@ -239,17 +238,17 @@ export const LoginPage: React.FC = () => {
 
           {/* Mobile Logo */}
           <div className="flex items-center gap-2 mb-10 lg:hidden">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-cyan-400 p-0.5">
-              <div className="w-full h-full bg-[#0d1527] rounded-[10px] flex items-center justify-center">
-                <Radio className="w-4.5 h-4.5 text-indigo-400" />
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-amber-400 p-0.5">
+              <div className="w-full h-full bg-[#070d18] rounded-[10px] flex items-center justify-center">
+                <ShieldAlert className="w-4.5 h-4.5 text-emerald-400" />
               </div>
             </div>
-            <span className="font-extrabold text-lg text-white">CivicPulse</span>
+            <span className="font-black text-lg text-white">MetroShield</span>
           </div>
 
           <div className="mb-8">
-            <h2 className="text-3xl font-black text-white mb-1">Welcome back</h2>
-            <p className="text-slate-400 text-sm">Sign in to your CivicPulse account</p>
+            <h2 className="text-3xl font-black text-white mb-1">Welcome to MetroShield</h2>
+            <p className="text-slate-400 text-sm">Sign in to your municipal defense portal</p>
           </div>
 
           {/* ── Role Selector ── */}
@@ -261,29 +260,29 @@ export const LoginPage: React.FC = () => {
               onClick={() => { setSelectedRole('citizen'); setError(''); }}
               className={`relative flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 transition-all duration-300 group overflow-hidden ${
                 isCitizen
-                  ? 'border-indigo-500 bg-indigo-950/60 shadow-lg shadow-indigo-500/20'
-                  : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600'
+                  ? 'border-emerald-500 bg-emerald-950/40 shadow-lg shadow-emerald-500/20'
+                  : 'border-slate-800 bg-[#090f1a] hover:border-slate-700'
               }`}
             >
               {isCitizen && (
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 to-violet-600/5 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 pointer-events-none" />
               )}
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
                 isCitizen
-                  ? 'bg-indigo-600 shadow-lg shadow-indigo-600/40'
-                  : 'bg-slate-800 group-hover:bg-slate-700'
+                  ? 'bg-gradient-to-br from-emerald-400 to-teal-600 shadow-lg shadow-emerald-500/40 text-black'
+                  : 'bg-slate-800 group-hover:bg-slate-700 text-slate-400'
               }`}>
-                <Users className={`w-6 h-6 ${isCitizen ? 'text-white' : 'text-slate-400'}`} />
+                <Users className="w-6 h-6 stroke-[2.5]" />
               </div>
               <div className="text-center">
-                <div className={`text-sm font-bold ${isCitizen ? 'text-indigo-200' : 'text-slate-300'}`}>
+                <div className={`text-sm font-black ${isCitizen ? 'text-emerald-300' : 'text-slate-300'}`}>
                   Citizen
                 </div>
-                <div className="text-[11px] text-slate-500">Report issues</div>
+                <div className="text-[11px] text-slate-500">Report & track hazards</div>
               </div>
               {isCitizen && (
                 <div className="absolute top-2 right-2">
-                  <CheckCircle className="w-4 h-4 text-indigo-400" />
+                  <CheckCircle className="w-4 h-4 text-emerald-400" />
                 </div>
               )}
             </button>
@@ -295,29 +294,29 @@ export const LoginPage: React.FC = () => {
               onClick={() => { setSelectedRole('authority'); setError(''); }}
               className={`relative flex flex-col items-center gap-2.5 p-4 rounded-2xl border-2 transition-all duration-300 group overflow-hidden ${
                 !isCitizen
-                  ? 'border-cyan-500 bg-cyan-950/40 shadow-lg shadow-cyan-500/15'
-                  : 'border-slate-700/60 bg-slate-900/40 hover:border-slate-600'
+                  ? 'border-amber-500 bg-amber-950/40 shadow-lg shadow-amber-500/20'
+                  : 'border-slate-800 bg-[#090f1a] hover:border-slate-700'
               }`}
             >
               {!isCitizen && (
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-600/8 to-blue-600/5 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-yellow-500/5 pointer-events-none" />
               )}
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
                 !isCitizen
-                  ? 'bg-gradient-to-br from-cyan-600 to-blue-600 shadow-lg shadow-cyan-600/40'
-                  : 'bg-slate-800 group-hover:bg-slate-700'
+                  ? 'bg-gradient-to-br from-amber-400 to-yellow-600 shadow-lg shadow-amber-500/40 text-black'
+                  : 'bg-slate-800 group-hover:bg-slate-700 text-slate-400'
               }`}>
-                <ShieldAlert className={`w-6 h-6 ${!isCitizen ? 'text-white' : 'text-slate-400'}`} />
+                <ShieldAlert className="w-6 h-6 stroke-[2.5]" />
               </div>
               <div className="text-center">
-                <div className={`text-sm font-bold ${!isCitizen ? 'text-cyan-200' : 'text-slate-300'}`}>
+                <div className={`text-sm font-black ${!isCitizen ? 'text-amber-300' : 'text-slate-300'}`}>
                   Authorizer
                 </div>
-                <div className="text-[11px] text-slate-500">Manage & resolve</div>
+                <div className="text-[11px] text-slate-500">Command & dispatch</div>
               </div>
               {!isCitizen && (
                 <div className="absolute top-2 right-2">
-                  <CheckCircle className="w-4 h-4 text-cyan-400" />
+                  <CheckCircle className="w-4 h-4 text-amber-400" />
                 </div>
               )}
             </button>
@@ -432,21 +431,21 @@ export const LoginPage: React.FC = () => {
               id="login-submit-btn"
               type="submit"
               disabled={isLoading}
-              className={`w-full py-3.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all duration-300 shadow-lg mt-2 ${
+              className={`w-full py-3.5 rounded-xl font-black text-sm flex items-center justify-center gap-2 transition-all duration-300 shadow-lg mt-2 ${
                 isCitizen
-                  ? 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-indigo-600/30 hover:shadow-indigo-600/50 disabled:from-indigo-800 disabled:to-violet-800'
-                  : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-cyan-600/25 hover:shadow-cyan-600/40 disabled:from-cyan-800 disabled:to-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-black shadow-emerald-500/25 hover:shadow-emerald-500/40 disabled:opacity-50'
+                  : 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black shadow-amber-500/25 hover:shadow-amber-500/40 disabled:opacity-50'
               } disabled:cursor-not-allowed`}
             >
               {isLoading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                   Authenticating…
                 </>
               ) : (
                 <>
                   {isCitizen ? 'Enter Citizen Portal' : 'Enter Authority Command'}
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
                 </>
               )}
             </button>
@@ -456,10 +455,10 @@ export const LoginPage: React.FC = () => {
               id="login-demo-btn"
               type="button"
               onClick={handleDemoLogin}
-              className="w-full py-2.5 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 border border-slate-700/60 hover:border-slate-600 bg-slate-900/40 hover:bg-slate-900/70 transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white border border-emerald-500/25 hover:border-emerald-500/50 bg-[#090f1a] hover:bg-[#0c1626] transition-all flex items-center justify-center gap-2"
             >
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-              Use Demo {isCitizen ? 'Citizen' : 'Authorizer'} Credentials
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              Use 1-Click Demo {isCitizen ? 'Citizen' : 'Authorizer'} Credentials
             </button>
           </form>
 

@@ -353,17 +353,17 @@ export const CitizenReport: React.FC = () => {
             id="submit-report-btn"
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3.5 px-6 rounded-2xl font-bold text-sm bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white shadow-xl shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 border border-indigo-400/30 disabled:opacity-50"
+            className="w-full py-4 px-6 rounded-2xl font-black text-sm bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-black shadow-xl shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 border border-emerald-300/40 disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
-                <Sparkles className="w-4 h-4 animate-spin text-white" />
-                <span>{submitPhase || 'Processing grievance with Gemini AI...'}</span>
+                <Sparkles className="w-4 h-4 animate-spin text-black" />
+                <span>{submitPhase || 'Analyzing hazard with Gemini AI...'}</span>
               </>
             ) : (
               <>
-                <Send className="w-4 h-4" />
-                <span>Submit Grievance to CivicPulse</span>
+                <Send className="w-4 h-4 stroke-[2.5]" />
+                <span>Dispatch Hazard to MetroShield Command</span>
               </>
             )}
           </button>

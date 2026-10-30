@@ -368,9 +368,9 @@ export const AdminQueueTable: React.FC<AdminQueueTableProps> = ({
       </div>
 
       {/* Table Footer Count */}
-      <div className="p-3 border-t border-slate-800 bg-slate-950/80 text-xs text-slate-500 flex items-center justify-between">
+      <div className="p-3 border-t border-slate-800 bg-[#070b14] text-xs text-slate-500 flex items-center justify-between">
         <span>Showing {sorted.length} of {reports.length} total municipal reports</span>
-        <span className="font-mono text-[11px]">CivicPulse Vector Triaged</span>
+        <span className="font-mono text-[11px] text-emerald-400 font-semibold">MetroShield Vector Triaged</span>
       </div>
 
     </div>

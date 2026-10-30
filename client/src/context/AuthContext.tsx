@@ -30,7 +30,7 @@ function getInitials(name: string): string {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<AuthUser | null>(() => {
     try {
-      const stored = sessionStorage.getItem('civicpulse_user');
+      const stored = sessionStorage.getItem('metroshield_user') || sessionStorage.getItem('civicpulse_user');
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -40,11 +40,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = useCallback((role: NonNullable<UserRole>, name: string, email: string) => {
     const avatar = getInitials(name) || (role === 'citizen' ? 'CZ' : 'AU');
     const newUser: AuthUser = { role, name, email, avatar };
-    sessionStorage.setItem('civicpulse_user', JSON.stringify(newUser));
+    sessionStorage.setItem('metroshield_user', JSON.stringify(newUser));
     setUser(newUser);
   }, []);
 
   const logout = useCallback(() => {
+    sessionStorage.removeItem('metroshield_user');
     sessionStorage.removeItem('civicpulse_user');
     setUser(null);
   }, []);

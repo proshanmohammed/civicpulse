@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'healthy',
-    service: 'CivicPulse Municipal Engine',
+    service: 'MetroShield Municipal Hazard Engine',
     timestamp: new Date().toISOString(),
     gemini_ready: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your-gemini-api-key'),
     supabase_ready: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_URL !== 'https://your-supabase-project.supabase.co')
@@ -52,9 +52,9 @@ app.use('/api/seed', seedRouter);
 // Root informational endpoint
 app.get('/', (req, res) => {
   res.json({
-    name: 'CivicPulse API',
-    version: '1.0.0',
-    description: 'AI-Powered Civic Issue Resolution Platform API',
+    name: 'MetroShield Municipal Engine API',
+    version: '2.0.0',
+    description: 'Autonomous Municipal Hazard Command & City Defense API',
     endpoints: {
       health: 'GET /api/health',
       reports: 'GET /api/reports, POST /api/reports, GET /api/reports/:id, PATCH /api/reports/:id/status',
@@ -90,7 +90,7 @@ async function startServer() {
     await db.seedData();
     app.listen(PORT, () => {
       console.log(`=======================================================`);
-      console.log(`🏛️ CivicPulse Backend Engine running on http://localhost:${PORT}`);
+      console.log(`🛡️ MetroShield Backend Engine running on http://localhost:${PORT}`);
       console.log(`🚀 Automated AI Pipeline & pgvector Triage Ready`);
       console.log(`=======================================================`);
     });

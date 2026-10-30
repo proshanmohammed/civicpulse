@@ -1,16 +1,16 @@
-# CivicPulse — AI-Powered Civic Issue Resolution Platform
+# MetroShield — Municipal Hazard Command & City Defense
 
 > **Capture $\rightarrow$ Understand $\rightarrow$ Reveal $\rightarrow$ Act.**  
-> Transforming chaotic citizen grievances into prioritized, explainable, spatially clustered, and trackable municipal actions using Gemini 2.5 Flash, pgvector semantic search, and interactive spatial intelligence.
+> Transforming chaotic civic hazards into prioritized, explainable, spatially clustered, and trackable municipal actions using Gemini AI, pgvector semantic search, and interactive spatial intelligence.
 
 ---
 
 ## 1. Executive Summary & Core Mission Directive
 Every day, municipalities receive thousands of unstructured, duplicate, and fragmented complaints across disparate channels: waterlogging, open craters, sparking power lines, overflowing sanitation bins, and dark alleys. Municipal authorities face triage bottlenecks, leading to delayed responses to life-threatening hazards and wasted operational budgets dispatching duplicate field crews.
 
-**CivicPulse** automates the complete civic grievance lifecycle:
+**MetroShield** automates the complete civic hazard lifecycle:
 1. **Capture (< 1 Minute):** Mobile-first citizen reporting with category auto-detection, photo upload, and pinpoint GPS/map geolocation.
-2. **Understand (Gemini 2.5 Flash):** Structured AI analysis generating concise 1-sentence summaries, calculating explainable priority scores (0–100), and issuing concrete field worker directives.
+2. **Understand (Gemini AI Pipeline):** Structured AI analysis generating concise 1-sentence summaries, calculating explainable priority scores (0–100), and issuing concrete field worker directives.
 3. **Reveal (pgvector & Spatial Clustering):** Automatic 768-dimensional semantic duplicate detection to merge redundant complaints, paired with DBSCAN density clustering to identify geographic hotspots.
 4. **Act (Authority Console & Public Tracker):** Central dispatch dashboard with field crew assignment, priority overriding, audit logging, and public transparency timelines.
 

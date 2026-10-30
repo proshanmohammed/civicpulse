@@ -64,37 +64,37 @@ export const AdminDashboard: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8">
       
       {/* Dashboard Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-emerald-500/20">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-sm shadow-emerald-500/20">
               <ShieldAlert className="w-4 h-4" />
             </div>
             <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-              Municipal Operations Command Center
+              MetroShield Municipal Operations Command
             </h1>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Logged in as <span className="text-cyan-300 font-semibold">{user?.name}</span> · Real-time automated grievance triage, spatial hotspot containment, and field crew orchestration.
+            Logged in as <span className="text-amber-300 font-bold">{user?.name}</span> · Real-time automated hazard triage, spatial hotspot containment, and rapid crew dispatch.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <Link
             to="/admin/clusters"
-            className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:border-indigo-500/50 text-indigo-300 text-xs font-semibold flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-2 rounded-xl bg-[#090f1a] border border-amber-500/30 hover:border-amber-400 text-amber-300 text-xs font-semibold flex items-center gap-1.5 transition-all"
           >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Hotspots & Clusters ({clusters.length})</span>
+            <Layers className="w-3.5 h-3.5 text-amber-400" />
+            <span>Hotspots &amp; Clusters ({clusters.length})</span>
           </Link>
 
           <button
             onClick={loadDashboardData}
             disabled={refreshing}
-            className="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-2 rounded-xl bg-[#090f1a] border border-emerald-500/30 text-emerald-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-all"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-indigo-400 ${refreshing ? 'animate-spin' : ''}`} />
-            <span>{refreshing ? 'Updating...' : 'Sync'}</span>
+            <RefreshCw className={`w-3.5 h-3.5 text-emerald-400 ${refreshing ? 'animate-spin' : ''}`} />
+            <span>{refreshing ? 'Updating...' : 'Sync Data'}</span>
           </button>
         </div>
       </div>

@@ -60,39 +60,39 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 glass-panel border-b border-slate-800/80 bg-[#0a0f1d]/85">
+    <nav className="sticky top-0 z-50 glass-panel border-b border-emerald-500/20 bg-[#05080f]/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
 
           {/* Logo & Platform Title */}
           <div className="flex items-center gap-3">
             <Link to={isAuthority ? '/admin' : '/'} className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-0.5 shadow-lg shadow-indigo-500/25 group-hover:shadow-indigo-500/40 transition-all duration-300">
-                <div className="w-full h-full bg-[#0d1527] rounded-[10px] flex items-center justify-center">
-                  <Radio className="w-5 h-5 text-indigo-400 group-hover:text-cyan-300 transition-colors" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-amber-400 p-0.5 shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/40 transition-all duration-300">
+                <div className="w-full h-full bg-[#070d18] rounded-[10px] flex items-center justify-center">
+                  <ShieldAlert className="w-5 h-5 text-emerald-400 group-hover:text-amber-300 transition-colors" />
                 </div>
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">
-                    CivicPulse
+                  <span className="font-black text-lg tracking-tight bg-gradient-to-r from-white via-emerald-100 to-amber-300 bg-clip-text text-transparent">
+                    MetroShield
                   </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-medium">
-                    AI ENGINE
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">
+                    CYBER COMMAND
                   </span>
                 </div>
-                <span className="text-[11px] text-slate-400 hidden sm:inline">Municipal Action Platform</span>
+                <span className="text-[11px] text-slate-400 hidden sm:inline">Municipal Hazard &amp; City Defense</span>
               </div>
             </Link>
 
-            {/* Role Switcher Pill — only shown to authority users or for context */}
-            <div className="hidden md:flex items-center p-1 bg-slate-900/90 rounded-xl border border-slate-800 ml-3">
+            {/* Role Switcher Pill */}
+            <div className="hidden md:flex items-center p-1 bg-[#090f1a] rounded-xl border border-emerald-500/20 ml-3">
               {!isAuthority && (
                 <Link
                   to="/"
                   className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
                     !isAdmin
-                      ? 'bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-sm'
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-black font-extrabold shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -105,7 +105,7 @@ export const Navbar: React.FC = () => {
                   to="/admin"
                   className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
                     isAdmin
-                      ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-sm'
+                      ? 'bg-gradient-to-r from-amber-500 to-emerald-600 text-black font-extrabold shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -177,10 +177,10 @@ export const Navbar: React.FC = () => {
               <Link
                 id="nav-report-issue-btn"
                 to="/report"
-                className="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white shadow-lg shadow-indigo-600/25 hover:shadow-indigo-600/40 transition-all flex items-center gap-1.5 border border-indigo-400/30"
+                className="px-4 py-2 rounded-xl text-xs font-black bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-black shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all flex items-center gap-1.5 border border-emerald-300/40"
               >
-                <PlusCircle className="w-4 h-4" />
-                Report Issue
+                <PlusCircle className="w-4 h-4 text-black stroke-[2.5]" />
+                Report Hazard
               </Link>
             )}
 

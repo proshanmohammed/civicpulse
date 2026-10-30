@@ -129,35 +129,35 @@ export const ReportSuccess: React.FC = () => {
       </div>
 
       {/* Confirmation Hero Banner */}
-      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-indigo-500/30 bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-950 shadow-2xl relative overflow-hidden">
+      <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-[#061414] via-[#07101c] to-[#05080f] shadow-2xl relative overflow-hidden">
         
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-emerald-500/20">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
-              <CheckCircle2 className="w-6 h-6" />
+              <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
             </div>
             <div>
               <span className="text-[11px] font-mono font-semibold text-emerald-400 uppercase tracking-wider block">
-                Complaint Successfully Registered
+                Hazard Successfully Registered
               </span>
               <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Grievance Tracking Console
+                MetroShield Live Incident Tracker
               </h1>
             </div>
           </div>
 
           {/* Copyable Tracking ID */}
-          <div className="flex items-center gap-2 bg-slate-950/80 p-2 rounded-xl border border-slate-800">
+          <div className="flex items-center gap-2 bg-[#090f1a] p-2 rounded-xl border border-emerald-500/25">
             <div className="text-left font-mono">
               <span className="text-[9px] text-slate-500 block uppercase">Tracking ID:</span>
-              <span className="text-xs text-indigo-300 font-semibold">{report.id.slice(0, 18)}...</span>
+              <span className="text-xs text-emerald-300 font-semibold">{report.id.slice(0, 18)}...</span>
             </div>
             <button
               onClick={handleCopyId}
-              className="p-2 rounded-lg bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white transition-all"
+              className="p-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500 text-emerald-300 hover:text-black transition-all"
               title="Copy ID to Clipboard"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+              {copied ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
         </div>

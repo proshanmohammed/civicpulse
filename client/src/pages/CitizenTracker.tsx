@@ -95,35 +95,35 @@ export const CitizenTracker: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
       
       {/* Hero Section */}
-      <div className="relative rounded-3xl overflow-hidden p-8 sm:p-12 border border-indigo-500/20 bg-gradient-to-br from-indigo-950/60 via-slate-900 to-slate-950 shadow-2xl">
-        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-12 w-80 h-80 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
+      <div className="relative rounded-3xl overflow-hidden p-8 sm:p-12 border border-emerald-500/20 bg-gradient-to-br from-[#061414] via-[#07101c] to-[#05080f] shadow-2xl">
+        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/3 -mb-12 w-80 h-80 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold">
-            <Radio className="w-3.5 h-3.5 text-indigo-400 animate-pulse" />
-            <span>Welcome back, <strong>{firstName}</strong> · Citizen Portal</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 text-xs font-semibold">
+            <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+            <span>Welcome back, <strong>{firstName}</strong> · MetroShield Citizen Portal</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-            Transforming Citizen Voices into{' '}
-            <span className="bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400 bg-clip-text text-transparent">
-              Prioritized Civic Action
+            Autonomous Urban Hazard Defense &amp;{' '}
+            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-300 bg-clip-text text-transparent">
+              Instant Action
             </span>
           </h1>
 
           <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-            CivicPulse bridges citizens and municipal responders using Gemini AI: automated duplicate clustering, explainable priority scoring, and transparent tracking in real time.
+            MetroShield bridges citizens and municipal responders using Gemini AI: automated duplicate clustering, explainable priority scoring, and transparent tracking in real time.
           </p>
 
           {/* Action CTAs & Quick Lookup */}
           <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Link
               to="/report"
-              className="px-6 py-3 rounded-2xl font-bold text-sm bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:from-indigo-600 hover:to-indigo-800 text-white shadow-xl shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all border border-indigo-400/30"
+              className="px-6 py-3 rounded-2xl font-black text-sm bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-black shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2 transition-all border border-emerald-300/40"
             >
-              <PlusCircle className="w-4 h-4" />
-              <span>Report an Issue (&lt; 1 min)</span>
+              <PlusCircle className="w-4 h-4 text-black stroke-[2.5]" />
+              <span>Report a Hazard (&lt; 1 min)</span>
             </Link>
 
             {/* Quick Ticket Lookup Box */}
@@ -135,7 +135,7 @@ export const CitizenTracker: React.FC = () => {
                   placeholder="Enter Ticket ID to track live..."
                   value={ticketSearchInput}
                   onChange={(e) => setTicketSearchInput(e.target.value)}
-                  className="w-full bg-slate-900/90 border border-slate-700 rounded-2xl pl-9 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full bg-[#080f1a] border border-emerald-500/30 rounded-2xl pl-9 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-400 font-mono"
                 />
               </div>
               <button
