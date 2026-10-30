@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { fetchReports, fetchStats, fetchClusters, seedData } from '../lib/api';
 import { Report, CityStats, ClusterInsight } from '../types';
+import { FALLBACK_REPORTS, FALLBACK_CLUSTERS, FALLBACK_STATS } from '../lib/fallbackData';
 import { MetricsGrid } from '../components/MetricsGrid';
 import { MapDashboard } from '../components/MapDashboard';
 import { AdminQueueTable } from '../components/AdminQueueTable';
@@ -23,10 +24,10 @@ import { useAuth } from '../context/AuthContext';
 
 export const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
-  const [reports, setReports] = useState<Report[]>([]);
-  const [stats, setStats] = useState<CityStats | null>(null);
-  const [clusters, setClusters] = useState<ClusterInsight[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [reports, setReports] = useState<Report[]>(FALLBACK_REPORTS);
+  const [stats, setStats] = useState<CityStats | null>(FALLBACK_STATS);
+  const [clusters, setClusters] = useState<ClusterInsight[]>(FALLBACK_CLUSTERS);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [activeActionBriefReport, setActiveActionBriefReport] = useState<Report | null>(null);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
@@ -40,34 +41,20 @@ export const AdminDashboard: React.FC = () => {
         fetchClusters()
       ]);
 
-      const loadedReports = reportsRes.status === 'fulfilled' ? reportsRes.value : [];
+      const loadedReports = reportsRes.status === 'fulfilled' && reportsRes.value.length > 0
+        ? reportsRes.value
+        : FALLBACK_REPORTS;
       setReports(loadedReports);
 
-      if (clustersRes.status === 'fulfilled') {
-        setClusters(clustersRes.value);
-      }
+      const loadedClusters = clustersRes.status === 'fulfilled' && clustersRes.value.length > 0
+        ? clustersRes.value
+        : FALLBACK_CLUSTERS;
+      setClusters(loadedClusters);
 
-      if (statsRes.status === 'fulfilled' && statsRes.value) {
+      if (statsRes.status === 'fulfilled' && statsRes.value && statsRes.value.total_reports > 0) {
         setStats(statsRes.value);
-      } else if (loadedReports.length > 0) {
-        const critical = loadedReports.filter(r => r.priority === 'Critical' && r.status !== 'Resolved').length;
-        const open = loadedReports.filter(r => r.status !== 'Resolved' && r.status !== 'Rejected').length;
-        const resolved = loadedReports.filter(r => r.status === 'Resolved').length;
-        const duplicates = loadedReports.filter(r => r.is_duplicate).length;
-        const avgScore = Math.round(loadedReports.reduce((acc, r) => acc + (r.priority_score || 0), 0) / loadedReports.length);
-
-        setStats({
-          total_reports: loadedReports.length,
-          open_hazards: open,
-          critical_alerts: critical,
-          resolved_count: resolved,
-          duplicate_merged_count: duplicates,
-          duplicate_merge_rate_pct: Number(((duplicates / loadedReports.length) * 100).toFixed(1)),
-          average_priority_score: avgScore,
-          avg_resolution_time_hours: 18.4,
-          category_breakdown: { waterlogging: 8, roads: 9, waste: 9, streetlights: 7, electrical: 7 },
-          status_breakdown: { Submitted: 11, 'Under Review': 7, Assigned: 10, 'In Progress': 7, Resolved: 5, Rejected: 0 }
-        });
+      } else {
+        setStats(FALLBACK_STATS);
       }
     } catch (err) {
       console.error('Failed to load admin dashboard:', err);

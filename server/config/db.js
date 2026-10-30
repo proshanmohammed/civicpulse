@@ -240,9 +240,10 @@ export const db = {
         if (filters.search) {
           query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,address.ilike.%${filters.search}%`);
         }
-        const { data, error } = await query;
-        if (!error && data) return data;
-        console.warn('[Supabase] getAllReports query failed, falling back to local store:', error?.message);
+        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase timeout')), 700));
+        const { data, error } = await Promise.race([query, timeoutPromise]);
+        if (!error && Array.isArray(data) && data.length > 0) return data;
+        console.warn('[Supabase] getAllReports returned empty or error, falling back to local store:', error?.message);
       } catch (err) {
         console.warn('[Supabase] Connection exception, falling back to local store:', err.message);
       }

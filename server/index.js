@@ -88,9 +88,9 @@ app.use((err, req, res, next) => {
 async function startServer() {
   try {
     await db.seedData();
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`=======================================================`);
-      console.log(`🛡️ MetroShield Backend Engine running on http://localhost:${PORT}`);
+      console.log(`🛡️ MetroShield Backend Engine running on http://127.0.0.1:${PORT}`);
       console.log(`🚀 Automated AI Pipeline & pgvector Triage Ready`);
       console.log(`=======================================================`);
     });

@@ -19,13 +19,14 @@ import { fetchClusters, fetchReports } from '../lib/api';
 import { ClusterInsight, Report } from '../types';
 import { MapDashboard } from '../components/MapDashboard';
 import { getPriorityBadge, getCategoryBadge, getStatusBadge } from '../lib/utils';
+import { FALLBACK_CLUSTERS, FALLBACK_REPORTS } from '../lib/fallbackData';
 
 export const ClusterIntelligence: React.FC = () => {
-  const [clusters, setClusters] = useState<ClusterInsight[]>([]);
-  const [reports, setReports] = useState<Report[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [clusters, setClusters] = useState<ClusterInsight[]>(FALLBACK_CLUSTERS);
+  const [reports, setReports] = useState<Report[]>(FALLBACK_REPORTS);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedClusterId, setSelectedClusterId] = useState<string | null>(null);
+  const [selectedClusterId, setSelectedClusterId] = useState<string | null>(FALLBACK_CLUSTERS[0]?.id || null);
 
   const loadClusterData = async () => {
     try {
@@ -34,8 +35,12 @@ export const ClusterIntelligence: React.FC = () => {
         fetchClusters(),
         fetchReports()
       ]);
-      const clusterData = clusterDataRes.status === 'fulfilled' ? clusterDataRes.value : [];
-      const reportData = reportDataRes.status === 'fulfilled' ? reportDataRes.value : [];
+      const clusterData = clusterDataRes.status === 'fulfilled' && clusterDataRes.value.length > 0 
+        ? clusterDataRes.value 
+        : FALLBACK_CLUSTERS;
+      const reportData = reportDataRes.status === 'fulfilled' && reportDataRes.value.length > 0 
+        ? reportDataRes.value 
+        : FALLBACK_REPORTS;
       setClusters(clusterData);
       setReports(reportData);
       if (clusterData.length > 0 && !selectedClusterId) {

@@ -121,8 +121,8 @@ export const MapDashboard: React.FC<MapDashboardProps> = ({
   const [activeCategory, setActiveCategory] = useState('all');
   const [activePriority, setActivePriority] = useState('all');
   const [showClusters, setShowClusters] = useState(showClustersByDefault);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([20.5937, 78.9629]); // India default
-  const [mapZoom, setMapZoom] = useState(5);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([37.7749, -122.4194]); // Municipal Grid default
+  const [mapZoom, setMapZoom] = useState(13);
   const [mapKey] = useState(() => Math.random().toString(36).slice(2)); // Stable key prevents remount
 
   // Auto-center on reports when data loads
@@ -171,9 +171,9 @@ export const MapDashboard: React.FC<MapDashboardProps> = ({
               <button
                 key={key}
                 onClick={() => setActiveCategory(key)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all whitespace-nowrap border ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap border ${
                   active
-                    ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm shadow-indigo-500/30'
+                    ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-black border-emerald-400 shadow-sm shadow-emerald-500/30'
                     : 'bg-slate-800/80 text-slate-300 border-slate-700/60 hover:bg-slate-800 hover:text-white'
                 }`}
               >
@@ -189,7 +189,7 @@ export const MapDashboard: React.FC<MapDashboardProps> = ({
           <select
             value={activePriority}
             onChange={e => setActivePriority(e.target.value)}
-            className="bg-slate-800 text-slate-200 text-xs border border-slate-700 rounded-lg px-2.5 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer"
+            className="bg-slate-800 text-slate-200 text-xs border border-slate-700 rounded-lg px-2.5 py-1 focus:outline-none focus:border-emerald-500 cursor-pointer"
           >
             <option value="all">All Priorities</option>
             <option value="Critical">🔴 Critical</option>
@@ -213,7 +213,7 @@ export const MapDashboard: React.FC<MapDashboardProps> = ({
 
           {/* Live pin count badge */}
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/60 border border-slate-700/50 text-xs text-slate-400">
-            <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+            <MapPin className="w-3.5 h-3.5 text-emerald-400" />
             <span>{filteredReports.length} pins</span>
             {criticalCount > 0 && (
               <span className="ml-1 px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-bold animate-pulse">

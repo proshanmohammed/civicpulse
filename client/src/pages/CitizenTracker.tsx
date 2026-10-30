@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { fetchReports, fetchStats, fetchClusters } from '../lib/api';
 import { Report, CityStats, ClusterInsight } from '../types';
+import { FALLBACK_REPORTS, FALLBACK_CLUSTERS, FALLBACK_STATS } from '../lib/fallbackData';
 import { MetricsGrid } from '../components/MetricsGrid';
 import { ReportCard } from '../components/ReportCard';
 import { MapDashboard } from '../components/MapDashboard';
@@ -28,10 +29,10 @@ export const CitizenTracker: React.FC = () => {
   const { user } = useAuth();
   const firstName = user?.name?.split(' ')[0] || 'Citizen';
 
-  const [reports, setReports] = useState<Report[]>([]);
-  const [stats, setStats] = useState<CityStats | null>(null);
-  const [clusters, setClusters] = useState<ClusterInsight[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [reports, setReports] = useState<Report[]>(FALLBACK_REPORTS);
+  const [stats, setStats] = useState<CityStats | null>(FALLBACK_STATS);
+  const [clusters, setClusters] = useState<ClusterInsight[]>(FALLBACK_CLUSTERS);
+  const [loading, setLoading] = useState(false);
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,43 +44,26 @@ export const CitizenTracker: React.FC = () => {
   useEffect(() => {
     async function loadData() {
       try {
-        setLoading(true);
         const [reportsRes, statsRes, clustersRes] = await Promise.allSettled([
           fetchReports(),
           fetchStats(),
           fetchClusters()
         ]);
 
-        const loadedReports = reportsRes.status === 'fulfilled' ? reportsRes.value : [];
+        const loadedReports = reportsRes.status === 'fulfilled' && reportsRes.value.length > 0
+          ? reportsRes.value
+          : FALLBACK_REPORTS;
         setReports(loadedReports);
 
-        if (clustersRes.status === 'fulfilled') {
-          setClusters(clustersRes.value);
-        }
+        const loadedClusters = clustersRes.status === 'fulfilled' && clustersRes.value.length > 0
+          ? clustersRes.value
+          : FALLBACK_CLUSTERS;
+        setClusters(loadedClusters);
 
-        if (statsRes.status === 'fulfilled' && statsRes.value) {
-          setStats(statsRes.value);
-        } else if (loadedReports.length > 0) {
-          // Compute fallback stats directly from loaded reports so metrics always show
-          const critical = loadedReports.filter(r => r.priority === 'Critical' && r.status !== 'Resolved').length;
-          const open = loadedReports.filter(r => r.status !== 'Resolved' && r.status !== 'Rejected').length;
-          const resolved = loadedReports.filter(r => r.status === 'Resolved').length;
-          const duplicates = loadedReports.filter(r => r.is_duplicate).length;
-          const avgScore = Math.round(loadedReports.reduce((acc, r) => acc + (r.priority_score || 0), 0) / loadedReports.length);
-
-          setStats({
-            total_reports: loadedReports.length,
-            open_hazards: open,
-            critical_alerts: critical,
-            resolved_count: resolved,
-            duplicate_merged_count: duplicates,
-            duplicate_merge_rate_pct: Number(((duplicates / loadedReports.length) * 100).toFixed(1)),
-            average_priority_score: avgScore,
-            avg_resolution_time_hours: 18.4,
-            category_breakdown: { waterlogging: 8, roads: 9, waste: 9, streetlights: 7, electrical: 7 },
-            status_breakdown: { Submitted: 11, 'Under Review': 7, Assigned: 10, 'In Progress': 7, Resolved: 5, Rejected: 0 }
-          });
-        }
+        const loadedStats = statsRes.status === 'fulfilled' && statsRes.value && statsRes.value.total_reports > 0
+          ? statsRes.value
+          : FALLBACK_STATS;
+        setStats(loadedStats);
       } catch (err) {
         console.error('Failed to load landing data:', err);
       } finally {
@@ -186,34 +170,34 @@ export const CitizenTracker: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-              <span>Public Civic Grievance Feed</span>
-              <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+              <span>MetroShield Live Municipal Hazard Feed</span>
+              <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                 {filteredReports.length} Active
               </span>
             </h2>
             <p className="text-xs text-slate-400 mt-0.5">
-              Transparent ledger of reported community concerns and current municipal remediation status.
+              Real-time ledger of reported municipal hazards and automated triage remediation status.
             </p>
           </div>
 
           {/* View Mode Toggle (Cards vs Interactive Map) */}
-          <div className="flex items-center p-1 bg-slate-900 rounded-xl border border-slate-800 self-start sm:self-auto">
+          <div className="flex items-center p-1 bg-[#090f1a] rounded-xl border border-emerald-500/20 self-start sm:self-auto">
             <button
               onClick={() => setViewMode('feed')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
                 viewMode === 'feed'
-                  ? 'bg-indigo-600 text-white shadow-sm'
+                  ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-black shadow-md shadow-emerald-500/25'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
               <List className="w-3.5 h-3.5" />
-              <span>Grievance Feed</span>
+              <span>Hazard Feed</span>
             </button>
             <button
               onClick={() => setViewMode('map')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
                 viewMode === 'map'
-                  ? 'bg-indigo-600 text-white shadow-sm'
+                  ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-black shadow-md shadow-emerald-500/25'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -224,7 +208,7 @@ export const CitizenTracker: React.FC = () => {
         </div>
 
         {/* Filters and Search Bar */}
-        <div className="glass-panel p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="glass-panel p-4 rounded-2xl border border-emerald-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
           
           {/* Category Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
@@ -232,10 +216,10 @@ export const CitizenTracker: React.FC = () => {
               <button
                 key={cat.key}
                 onClick={() => setSelectedCategory(cat.key)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
                   selectedCategory === cat.key
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+                    ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-black shadow-md shadow-emerald-500/25'
+                    : 'bg-[#090f1a] text-slate-400 hover:text-slate-200 border border-slate-800'
                 }`}
               >
                 {cat.label}
@@ -252,14 +236,14 @@ export const CitizenTracker: React.FC = () => {
                 placeholder="Search issues or street..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                className="w-full bg-[#090f1a] border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
               />
             </div>
 
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-indigo-500"
+              className="bg-[#090f1a] border border-slate-800 text-slate-300 text-xs rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-emerald-500 cursor-pointer"
             >
               <option value="all">All Statuses</option>
               <option value="Submitted">Submitted</option>
