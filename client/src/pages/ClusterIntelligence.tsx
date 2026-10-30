@@ -30,10 +30,12 @@ export const ClusterIntelligence: React.FC = () => {
   const loadClusterData = async () => {
     try {
       setRefreshing(true);
-      const [clusterData, reportData] = await Promise.all([
+      const [clusterDataRes, reportDataRes] = await Promise.allSettled([
         fetchClusters(),
         fetchReports()
       ]);
+      const clusterData = clusterDataRes.status === 'fulfilled' ? clusterDataRes.value : [];
+      const reportData = reportDataRes.status === 'fulfilled' ? reportDataRes.value : [];
       setClusters(clusterData);
       setReports(reportData);
       if (clusterData.length > 0 && !selectedClusterId) {
